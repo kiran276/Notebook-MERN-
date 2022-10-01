@@ -40,9 +40,9 @@ const secPass = await bcrypt.hash(req.body.password,salt);
 const data ={
   User:{ id:user.id}
 }
-console.log(user.id)
+
     const authToken = jwt.sign(data, JWT_SECRET);
-    console.log(authToken)
+   
 
 res.json(authToken)
 }
@@ -52,4 +52,49 @@ res.status(500).send("some error occured")
 }
 })
 
+
+
+// authenticate a user : POST /api/auth/login no login required
+
+router.post('/login',[
+body('email','Enter A Valid Email').isEmail(),
+body('password','password cannot be blanked').exists(),
+
+],async (req,res)=>{
+
+
+//if there are error return bad request 
+const errors = validationResult(req);
+if (!errors.isEmpty()) {
+  return res.status(400).json({ errors: errors.array() });
+}
+ //here we are using destructuring as resp.body contains email and password
+const {email,password} = req.body;
+try{
+  let user = await User.findOne({email});
+  if(!user){
+    return res.status(400).json({error:'try to login with coorect credentials'});
+  }
+
+  const passwordCompare = await bcrypt.compare(password,user.password);
+  if(!passwordCompare){
+    return res.status(400).json({error:'try to login with coorect credentials'});
+  }
+
+  const data ={
+    user:{ id:user.id}
+  }
+
+  const authToken = jwt.sign(data, JWT_SECRET);
+  console.log(authToken)
+res.json(authToken)
+
+}
+catch(error){
+  console.error(error.message);
+  res.status(500).send("Internal Server Error")
+  }
+
+
+})
 module.exports = router;
