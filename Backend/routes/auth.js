@@ -4,8 +4,12 @@ const router = express.Router();
 const { body,validationResult} = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const fetchUser = require('../middleware/fetchuser');
+
 const JWT_SECRET = "ARYALKIRAN"
 
+
+// 11111111111111111111111
 // creating a user using: POST "api/auth/createuser". no login required
 router.post('/createUser',[ body('email').isEmail(),
 body('name','Enter a Valid name').isLength({min:3}),
@@ -53,7 +57,7 @@ res.status(500).send("some error occured")
 })
 
 
-
+// 22222222222222222222222
 // authenticate a user : POST /api/auth/login no login required
 
 router.post('/login',[
@@ -97,4 +101,20 @@ catch(error){
 
 
 })
+
+// 3333333333333333333333333
+// Get User Details :POST /api/auth/getuser login required
+router.post('/getuser',fetchUser,async (req,res)=>{
+try{
+  userID=req.user.id;
+  // -password below means uske alawa baaki sab value milegi
+  const user = await User.findById(userID).select("-passwrod")  
+  res.send(user)
+}
+catch(error){
+  console.error(error.message);
+  res.status(500).send("Internal Server Error")
+  }
+})
+
 module.exports = router;
