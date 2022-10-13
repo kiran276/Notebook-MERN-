@@ -15,11 +15,11 @@ router.post('/createUser',[ body('email').isEmail(),
 body('name','Enter a Valid name').isLength({min:3}),
 body('password','Password must be 5 characters long').isLength({min:5}),
 ],async (req,res)=>{
-
+let success=false;
   // IF there are errors,return Bad request and the errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ success,errors: errors.array() });
     }
 // Check weather the user with this email exists already
 try{
@@ -47,8 +47,8 @@ const data ={
 
     const authToken = jwt.sign(data, JWT_SECRET);
    
-
-res.json(authToken)
+success=true;
+res.json({success,authToken})
 }
 catch(error){
 console.error(errror.message);
@@ -66,6 +66,7 @@ body('password','password cannot be blanked').exists(),
 
 ],async (req,res)=>{
 
+let success =false;
 
 //if there are error return bad request 
 const errors = validationResult(req);
@@ -77,12 +78,14 @@ const {email,password} = req.body;
 try{
   let user = await User.findOne({email});
   if(!user){
+    success = false;
     return res.status(400).json({error:'try to login with coorect credentials'});
   }
 
   const passwordCompare = await bcrypt.compare(password,user.password);
   if(!passwordCompare){
-    return res.status(400).json({error:'try to login with coorect credentials'});
+    success = false;
+    return res.status(400).json({success,error:'try to login with coorect credentials'});
   }
 
   const data ={
@@ -91,7 +94,8 @@ try{
 
   const authToken = jwt.sign(data, JWT_SECRET);
   console.log(authToken)
-res.json(authToken)
+  success = true;
+res.json({success,authToken})
 
 }
 catch(error){

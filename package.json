@@ -10,8 +10,9 @@
     "express-validator": "^6.14.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.4.1",
+    "react-router-dom": "^6.4.2",
     "react-scripts": "5.0.1",
+    "sweetalert2": "^11.4.37",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -19,7 +20,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "both":"concurrently \"npm run start\" \"nodemon Backend/index.js\""
+    "both": "concurrently \"npm run start\" \"nodemon Backend/index.js\""
   },
   "eslintConfig": {
     "extends": [
